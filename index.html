@@ -301,7 +301,7 @@
       </div>
 
       <div class="info-text" id="infoText">
-        For 3-digit inputs, use the 8 bit calculator. For 5 digit inputs, use the Left + Right Lights. Each one is left to right and represents the actual config in the binary hallway.
+        ↓ and ↑ Are the ways the levers should be flipped<br><br>For 3-digit inputs, use the 8 bit calculator. For 5 digit inputs, use the Left + Right Lights. Each one is left to right and represents the actual config in the binary hallway.
       </div>
 
       <div class="bottom-display" id="bottomDisplay">
@@ -378,7 +378,7 @@
             const bitIndex = row.start + i;
             const light = document.createElement('div');
             light.className = `light ${lights[bitIndex] ? 'on' : ''}`;
-            light.textContent = lights[bitIndex] ? '1' : '0';
+            light.textContent = lights[bitIndex] ? '↓' : '↑';
             light.onclick = () => toggleLight(bitIndex);
             
             const bitNum = document.createElement('div');
