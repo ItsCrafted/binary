@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVP Legacy Binary Calculator</title>
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #96f3f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .light-solver-container {
+      margin: 2rem 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .light-solver {
+      background: rgba(150, 243, 245, 0.1);
+      border: 1px solid #96f3f5;
+      border-radius: 10px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    .light-solver h3 {
+      color: #96f3f5;
+      margin-bottom: 1.5rem;
+      margin-top: 0;
+      font-size: 1.8em;
+    }
+
+    .input-section {
+      margin-bottom: 2rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .input-section input {
+      width: 100%;
+      max-width: 300px;
+      padding: 12px;
+      background: rgba(150, 243, 245, 0.05);
+      border: 2px solid #96f3f5;
+      border-radius: 8px;
+      color: #96f3f5;
+      font-size: 1.2em;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .input-section input:focus {
+      outline: none;
+      border-color: #00ffe5;
+      box-shadow: 0 0 10px rgba(0, 255, 229, 0.3);
+    }
+
+    .hallway-3d {
+      perspective: 1500px;
+      margin-bottom: 2rem;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hallway-container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding: 60px 40px;
+      background: linear-gradient(180deg, rgba(20, 20, 20, 0.9) 0%, rgba(50, 50, 50, 0.4) 100%);
+      border-radius: 15px;
+      border: 2px solid rgba(150, 243, 245, 0.3);
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .hallway-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, 
+        rgba(150, 243, 245, 0.08) 0%,
+        rgba(150, 243, 245, 0.02) 100%);
+      pointer-events: none;
+      border-radius: 15px;
+    }
+
+    .hallway-section {
+      display: flex;
+      gap: 120px;
+      justify-content: center;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .hallway-side {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .side-label {
+      color: #96f3f5;
+      font-weight: bold;
+      font-size: 1.2em;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .light-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .light {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid #96f3f5;
+      background: rgba(50, 50, 50, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      font-weight: bold;
+      position: relative;
+      color: #555;
+    }
+
+    .light.on {
+      background: #00ffe5;
+      box-shadow: 0 0 25px #00ffe5, 0 0 50px rgba(0, 255, 229, 0.6);
+      border-color: #00ffe5;
+      color: #1a1a1a;
+    }
+
+    .light:hover {
+      transform: scale(1.15);
+      border-color: #00ffe5;
+    }
+
+    .bit-number {
+      position: absolute;
+      bottom: -22px;
+      font-size: 0.65em;
+      color: #96f3f5;
+      font-weight: normal;
+    }
+
+    .result-section {
+      width: 100%;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .result-section .result-value {
+      font-size: 2.5em;
+      color: #00ffe5;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    .binary-display {
+      font-size: 1.3em;
+      color: #96f3f5;
+      margin-top: 1rem;
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    .info-text {
+      color: #96f3f5;
+      opacity: 0.8;
+      font-size: 0.9em;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .bottom-display {
+      margin-top: 2rem;
+      padding: 20px;
+      background: rgba(150, 243, 245, 0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(150, 243, 245, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .bottom-display h4 {
+      color: #96f3f5;
+      margin: 0;
+      font-size: 1.2em;
+    }
+
+    .eight-light-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .eight-light-row .light {
+      width: 45px;
+      height: 45px;
+    }
+
+    @media (max-width: 768px) {
+      .light-solver {
+        padding: 1rem;
+      }
+
+      .hallway-container {
+        padding: 20px;
+        gap: 20px;
+      }
+
+      .hallway-section {
+        gap: 40px;
+      }
+
+      .light {
+        width: 40px;
+        height: 40px;
+        font-size: 1em;
+      }
+
+      .light-row {
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="light-solver-container">
+    <div class="light-solver">
+      <h3>PVP Legacy "The Blue" Binary Calculator</h3>
+      
+      <div class="input-section">
+        <input type="number" id="numberInput" placeholder="Enter a number" min="0" />
+      </div>
+
+      <div class="hallway-3d" id="hallwaySection">
+        <div class="hallway-container">
+          <div class="hallway-section top">
+            <div class="hallway-side">
+              <div class="side-label">LEFT TOP</div>
+              <div class="light-row" id="leftTop"></div>
+            </div>
+            
+            <div class="hallway-side">
+              <div class="light-row" id="rightTop"></div>
+              <div class="side-label">RIGHT TOP</div>
+            </div>
+          </div>
+          
+          <div class="hallway-section bottom">
+            <div class="hallway-side">
+              <div class="side-label">LEFT BOTTOM</div>
+              <div class="light-row" id="leftBottom"></div>
+            </div>
+            
+            <div class="hallway-side">
+              <div class="light-row" id="rightBottom"></div>
+              <div class="side-label">RIGHT BOTTOM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div style="color: #96f3f5;">Decimal Value:</div>
+        <div class="result-value" id="decimalValue">0</div>
+        <div class="binary-display" id="binaryValue"></div>
+      </div>
+
+      <div class="info-text" id="infoText">
+        For 3-digit inputs, use the 8 bit calculator. For 5 digit inputs, use the Left + Right Lights. Each one is left to right and represents the actual config in the binary hallway.
+      </div>
+
+      <div class="bottom-display" id="bottomDisplay">
+        <h4>8-Bit Display</h4>
+        <div class="eight-light-row" id="eightBitDisplay"></div>
+        <div style="color: #96f3f5; font-size: 0.9em; opacity: 0.8;">Shows last 8 bits</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let lights = new Array(16).fill(false);
+    
+    const input = document.getElementById('numberInput');
+    const decimalDisplay = document.getElementById('decimalValue');
+    const binaryDisplay = document.getElementById('binaryValue');
+    
+    const leftTop = document.getElementById('leftTop');
+    const leftBottom = document.getElementById('leftBottom');
+    const rightTop = document.getElementById('rightTop');
+    const rightBottom = document.getElementById('rightBottom');
+    const eightBitDisplay = document.getElementById('eightBitDisplay');
+    const hallwaySection = document.getElementById('hallwaySection');
+    const infoText = document.getElementById('infoText');
+    const bottomDisplay = document.getElementById('bottomDisplay');
+
+    input.addEventListener('input', function() {
+      let num = parseInt(this.value);
+      if (isNaN(num)) {
+        num = 0;
+        this.value = '';
+      }
+      if (num < 0) num = 0;
+      
+      const numDigits = this.value.length;
+      setFromNumber(num, numDigits);
+    });
+
+    function setFromNumber(num, numDigits = 0) {
+      const binary = num.toString(2).padStart(16, '0');
+      
+      for (let i = 0; i < 16; i++) {
+        lights[i] = binary[i] === '1';
+      }
+      
+      renderLights(numDigits);
+      updateDisplay();
+    }
+
+    function renderLights(numDigits = 0) {
+      leftTop.innerHTML = '';
+      leftBottom.innerHTML = '';
+      rightTop.innerHTML = '';
+      rightBottom.innerHTML = '';
+      eightBitDisplay.innerHTML = '';
+      
+      const showHallway = numDigits !== 3;
+      const show8Bit = numDigits === 3 || numDigits === 0;
+      
+      hallwaySection.style.display = showHallway ? 'flex' : 'none';
+      infoText.style.display = showHallway ? 'block' : 'none';
+      bottomDisplay.style.display = show8Bit ? 'flex' : 'none';
+      
+      if (showHallway) {
+        const rows = [
+          { element: leftTop, start: 0 },
+          { element: leftBottom, start: 4 },
+          { element: rightTop, start: 8 },
+          { element: rightBottom, start: 12 }
+        ];
+        
+        rows.forEach(row => {
+          for (let i = 0; i < 4; i++) {
+            const bitIndex = row.start + i;
+            const light = document.createElement('div');
+            light.className = `light ${lights[bitIndex] ? 'on' : ''}`;
+            light.textContent = lights[bitIndex] ? '1' : '0';
+            light.onclick = () => toggleLight(bitIndex);
+            
+            const bitNum = document.createElement('div');
+            bitNum.className = 'bit-number';
+            bitNum.textContent = `bit ${bitIndex}`;
+            light.appendChild(bitNum);
+            
+            row.element.appendChild(light);
+          }
+        });
+      }
+
+      if (show8Bit) {
+        render8BitDisplay();
+      }
+    }
+
+    function render8BitDisplay() {
+      eightBitDisplay.innerHTML = '';
+      
+      const binaryStr = lights.map(b => b ? '1' : '0').join('');
+      let eightBits = binaryStr.slice(-8);
+      
+      const decimal = calculateDecimal();
+      if (decimal > 255) {
+        const fullBinary = decimal.toString(2);
+        eightBits = fullBinary.slice(-8).padStart(8, '0');
+      }
+      
+      for (let i = 0; i < 8; i++) {
+        const light = document.createElement('div');
+        const isOn = eightBits[i] === '1';
+        light.className = `light ${isOn ? 'on' : ''}`;
+        light.textContent = isOn ? '1' : '0';
+        
+        const bitNum = document.createElement('div');
+        bitNum.className = 'bit-number';
+        bitNum.textContent = `${7 - i}`;
+        light.appendChild(bitNum);
+        
+        eightBitDisplay.appendChild(light);
+      }
+    }
+
+    function toggleLight(index) {
+      lights[index] = !lights[index];
+      const numDigits = input.value.length;
+      renderLights(numDigits);
+      updateDisplay();
+      syncInput();
+    }
+
+    function updateDisplay() {
+      const decimal = calculateDecimal();
+      const binary = lights.map(b => b ? '1' : '0').join('');
+      
+      decimalDisplay.textContent = decimal.toLocaleString();
+      binaryDisplay.textContent = `Binary: ${binary.slice(0, 4)} ${binary.slice(4, 8)} ${binary.slice(8, 12)} ${binary.slice(12, 16)}`;
+    }
+
+    function calculateDecimal() {
+      const binary = lights.map(b => b ? '1' : '0').join('');
+      return parseInt(binary, 2);
+    }
+
+    function syncInput() {
+      input.value = calculateDecimal();
+    }
+
+    setFromNumber(0);
+  </script>
+</body>
+</html>
