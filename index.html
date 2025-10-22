@@ -358,8 +358,8 @@
       rightBottom.innerHTML = '';
       eightBitDisplay.innerHTML = '';
       
-      const showHallway = numDigits !== 3;
-      const show8Bit = numDigits === 3 || numDigits === 0;
+      const showHallway = numDigits > 3;
+      const show8Bit = numDigits <= 3 || numDigits === 0;
       
       hallwaySection.style.display = showHallway ? 'flex' : 'none';
       infoText.style.display = showHallway ? 'block' : 'none';
